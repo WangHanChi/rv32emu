@@ -5,104 +5,114 @@
 .set SYSEXIT, 93
 .set SYSWRITE, 64
 
-
 .data
-nums:		.word 49, 32, 48, 32, 48, 32, 50, 32, 53
-            .set arr_size, .-nums
-numsSize:	.word 5
-space:		.word 32
-before:		.ascii  "Before move zeroes = "
-            .set str_before_len, .-before
-after:		.ascii  "After  move zeroes = "
-            .set str_after_len, .-after
-nextline:	.ascii  "\n"
-            .set str_next_len, .-nextline
+nums1:  .word 1, 0, 0, 2, 5
+        .set arr_size1, .-nums1
+
+nums2:  .word 1, 9, 0, 6, 7
+        .set arr_size2, .-nums2
+
+nums3:  .word 0, 0, 0, 0, 4
+        .set arr_size3, .-nums3
+
+nextline:    .ascii  "\n"
+             .set str_next_len, .-nextline
+
+blank:      .ascii  " "
+             .set str_blank_len, .-blank
 
 .text
 _start:
-		la	s0, nums		# s0 = nums[0]
-		lw	s1, numsSize	# s1 = numsSize
-        addi t5, x0, 48
-        addi t6, x0, 32
-        li t4, 0x10000000
-        li	a7, SYSWRITE	# print .string
-        li  a0, 1           # standard output
-		la	a1, before		# pointer to string
-        li  a2, str_before_len
-		ecall
-		jal		printo		# print nums before move
-        li	a7, SYSWRITE	# print .string
-        li  a0, 1           # standard output
-		la	a1, nextline	# pointer to string
-        li  a2, str_next_len
-		ecall
+    la s0, nums1                 # load nums base address to s0
+    addi s1, x0, 5               #nums_size = 5
+    
+    #call function moveZeroes
+    add a0, s0, x0            # a0 which stands for address of nums array is the first argument
+    add t3, s1, x0            # t3 which stands for array size of nums is the second argument
+    jal ra, moveZeroes        #jump to moveZeroes function
+    
+    #PrintArray
+    jal ra, printArray
 
-        li	a7, SYSWRITE	# print .string
-        li  a0, 1           # standard output
-		la	a1, after		# pointer to string
-        li  a2, str_after_len
-		ecall
-        jal		moveZeroes	# moveZeroes (leaf procedure)
+    # printf("\n");
+    li  a7, SYSWRITE
+    li  a0, 1
+    la  a1, nextline
+    li  a2, 1
+    ecall
 
-		jal		print		# print nums after move
-
-		li	a7, SYSEXIT 	# exit
-        addi a0, x0, 0       # Use 0 return code
-		ecall
-
+    # exit and return 0
+    li  a7, SYSEXIT	    
+    addi a0, x0, 0
+    ecall
+    
 moveZeroes:
-		addi	t3, zero, 0		# t3: start = 0
-		addi	t0, zero, -1	# t0: i = -1
-	Loop:
-		addi	t0, t0, 1		# i += 1
-		bge		t0, s1, While	# i >= len -> While: 
-		slli	t1, t0, 3		# t1: i << 2
-		add		t1, t1, s0		# t1 = nums[i]
-		lw		t1, 0(t1)
-		beq		t1, t5, Loop	# nums[i] == 0 -> Loop:
-		slli	t2, t3, 3		# else, t2: start << 2
-		add		t2, t2, s0		# t2 = nums[start]
-		sw		t1, 0(t2)		# nums[start] = nums[i]
-        sw      t1, 0(t4)
-        addi    t4, t4, 4
-        sw      t6, 0(t4)
-        addi    t4, t4, 4
-		addi	t3, t3, 1		# start += 1
-		j		Loop
-	While:
-		bge		t3, s1, Exit	# start >= numsSize : Exit
-		slli	t2, t3, 3		# t2: start << 2
-		add		t2, t2, s0		# t2: nums[start]
-		sw		t5, 0(t2)		# nums[start] = 0
-        sw      t5, 0(t4)
-        addi    t4, t4, 4
-        sw      t6, 0(t4)
-        addi    t4, t4, 4
-		addi	t3, t3, 1		# start += 1
-		j		While
-	Exit:
+    addi sp, sp, -12
+    sw ra, 0(sp)
+    sw s0, 4(sp)
+    sw s1, 8(sp)
+    li s1, 0                    #next non zero index = 0
+    addi s2, x0, 0                 # i = 0
+    loop:
+        bge s2, t3, exit           #i >= array_size exit
+        slli t0, s2, 2             #i * 4
+        add t0, a0, t0             #array + i*4
+        lw t1, 0(t0)              #t1 = array[i]
+        beq t1, x0, next_iter
+        slli t2, s1, 2             #next_nonzero_index * 4
+        add t2, t2, a0             #array + next_nonzero_index * 4
+        sw t1, 0(t2)              #array[next_nonzero_index] = array[i]
+        beq s1, s2, next_iter_addIndex             #if(next_nonzero_index != i)
+        sw x0, 0(t0)              #store 0 to array[i]
+    next_iter_addIndex:
+        addi s1,s1, 1             #next_nonzero_index++
+    next_iter:
+        addi s2, s2, 1             #i++
+        j loop
+ exit:
+    lw ra, 0(sp)
+    lw s0, 4(sp)
+    lw s1, 8(sp)
+    addi sp, sp, 12
+    jr ra
+ 
+printArray:
 
-		jr      ra
+    addi sp, sp, -8
+    sw ra, 0(sp)
+    sw s0, 4(sp)
+    add s0, a0, x0 # s1 = pointer to array
+    add t0, x0, x0 # t0 = i in for loop
 
-printo:
+    la t5, nums1
+    addi t6, x0, 0
+    addi s11, x0, arr_size1
+    srli s11, s11, 2
+    printloop:
+        bge t6, s11, finish_print_loop
+        lw t4, 0(t5)
+        addi t5, t5, 4
+        mv a1, t4
+        addi a1, a1, 48
+        addi sp, sp, -4
+        sw a1, 0(sp)
+        addi a1, sp, 0
         li a7, SYSWRITE
         li a0, 1
-        la a1, nums
-        li a2, arr_size
+        li a2, 4
         ecall
-		jr  ra
-
-print:
+        addi sp,sp,4  
         li a7, SYSWRITE
         li a0, 1
-        la a1, 0x10000000
-        li a2, arr_size
+        la a1, blank
+        li a2, str_blank_len
         ecall
+        addi t6, t6, 1
+        j printloop
+        
 
-        li a7, SYSWRITE
-        li a0, 1
-        la a1, nextline
-        li a2, 1
-        ecall
-		jr  ra
-	
+finish_print_loop:
+    lw ra, 0(sp)
+    lw s0, 4(sp)
+    addi sp, sp, 8
+    jr ra
