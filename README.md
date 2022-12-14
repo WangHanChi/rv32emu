@@ -146,12 +146,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 ## External sources
 
 In `rv32emu` repository, there are some prebuilt ELF files for testing purpose.
-* `chacha20.elf` : See [tests/chacha20](tests/chacha20)
+* `captcha.elf` : See [tests/captcha.c](tests/captcha.c)
+* `chacha20.elf` : See [tests/chacha20](tests/chacha20.c)
 * `coremark.elf` : See [eembc/coremark](https://github.com/eembc/coremark) [RV32M]
 * `dhrystone.elf` : See [rv8-bench](https://github.com/michaeljclark/rv8-bench)
 * `doom.elf` : See [sysprog21/doom_riscv](https://github.com/sysprog21/doom_riscv) [RV32M]
 * `ieee754.elf` : See [tests/ieee754.c](tests/ieee754.c) [RV32F]
 * `jit-bf.elf` : See [ezaki-k/xkon_beta](https://github.com/ezaki-k/xkon_beta)
+* `line.elf` : See [tests/line.c](tests/line.c)
 * `maj2random.elf` : See [tests/maj2random.c](tests/maj2random.c) [RV32F]
 * `mandelbrot.elf` : See [tests/mandelbrot.c](tests/mandelbrot.c)
 * `nqueens.elf` : See [tests/nqueens.c](tests/nqueens.c)
@@ -168,6 +170,7 @@ In `rv32emu` repository, there are some prebuilt ELF files for testing purpose.
 * [Juraj's RISC-V note](https://jborza.com/tags/riscv/)
 * [libriscv: RISC-V userspace emulator library](https://github.com/fwsGonzo/libriscv)
 * [LupV: an education-friendly RISC-V based system emulator](https://gitlab.com/luplab/lupv)
+* [mini-rv32ima](https://github.com/cnlohr/mini-rv32ima)
 * [Threaded Code](https://www.complang.tuwien.ac.at/forth/threaded-code.html) / [threaded-code-benchmark](https://github.com/shadowofneptune/threaded-code-benchmark)
 
 ## License
